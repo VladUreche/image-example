@@ -23,12 +23,6 @@ object MyBuild extends Build {
     libraryDependencies += "org.scala-miniboxing.plugins" %% "miniboxing-runtime" % "0.4-SNAPSHOT",
     addCompilerPlugin("org.scala-miniboxing.plugins" %% "miniboxing-plugin" % "0.4-SNAPSHOT"),
     scalacOptions ++= (
-      //"-P:minibox:log" ::    // enable the miniboxing plugin output
-      //                       // (which explains what the plugin is doing)
-      //"-P:minibox:hijack" :: // enable hijacking the @specialized annotations
-      //                       // transforming them into @miniboxed annotations
-      "-optimize" ::         // necessary to get the best performance when
-                             // using the miniboxing plugin
       "-P:minibox:warn" ::
       Nil
     )

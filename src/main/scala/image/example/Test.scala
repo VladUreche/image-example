@@ -8,10 +8,9 @@ object Test {
     for (a <- 1 to 5)
       timed {
         image.
-          map(convertTo(Color.RGBAExtended)).
+          map(convertTo(Color.FullColor)).
           map(invert).
           map(scale(2)).
-          map(convertTo(Color.FullColor)).
           map(blur(10)).
           map(convertTo(Color.RGBA))
       }

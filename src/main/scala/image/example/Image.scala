@@ -6,7 +6,7 @@ import java.io.File
 abstract class Image[Repr: Color] {
   def width: Int
   def height: Int
-  def get(x: Int, y: Int): Repr
+  def apply(x: Int, y: Int): Repr
   def map[Repr2: Color](f: Image[Repr] => Generator[Repr2]): Image[Repr2]
 }
 
@@ -24,14 +24,14 @@ private class ImageImpl[Repr: Color](val width: Int, val height: Int) extends Im
   val array = implicitly[Color[Repr]].manifest.newArray(width * height)
 
   // get pixel, public
-  def get(x: Int, y: Int): Repr = {
+  def apply(x: Int, y: Int): Repr = {
     assert(x < width)
     assert(y < height)
     array(x + y * width)
   }
 
   // set pixel, protected
-  protected def put(x: Int, y: Int, t: Repr): Unit = {
+  protected def update(x: Int, y: Int, t: Repr): Unit = {
     assert(x < width)
     assert(y < height)
     array(x + y * width) = t
@@ -44,7 +44,7 @@ private class ImageImpl[Repr: Color](val width: Int, val height: Int) extends Im
       var y = 0
       while (y < height) {
         while (x < width) {
-          this.put(x, y, gen.generate(x, y))
+          this(x, y) = gen.generate(x, y)
           x += 1
         }
         x = 0

@@ -1,7 +1,5 @@
 package image.example
 
-import Color._
-
 abstract class Generator[Repr: Color] {
   def width: Int
   def height: Int
@@ -15,7 +13,7 @@ object Generator {
       def width = image.width
       def height = image.height
       def generate(x: Int, y: Int): Repr2 = {
-        val pixel = image.get(x, y)
+        val pixel = image(x, y)
         val r = from.r(pixel)
         val g = from.g(pixel)
         val b = from.b(pixel)
@@ -31,7 +29,7 @@ object Generator {
       def height = (image.height * scale).toInt
       def generate(x: Int, y: Int): Repr = {
         val encoding = implicitly[Color[Repr]]
-        image.get((x.toFloat / scale).toInt, (y.toFloat / scale).toInt)
+        image((x.toFloat / scale).toInt, (y.toFloat / scale).toInt)
       }
     }
 
@@ -41,7 +39,7 @@ object Generator {
       def height = image.height
       def generate(x: Int, y: Int): Repr = {
         val encoding = implicitly[Color[Repr]]
-        val pixel = image.get(x, y)
+        val pixel = image(x, y)
         val r = encoding.r(pixel)
         val g = encoding.g(pixel)
         val b = encoding.b(pixel)
@@ -63,10 +61,10 @@ object Generator {
         var xd = -size + 1
         var yd = -size + 1
 
-        var r: Float = 0
-        var g: Float = 0
-        var b: Float = 0
-        var a: Float = 0
+        var r: Double = 0
+        var g: Double = 0
+        var b: Double = 0
+        var a: Double = 0
         var tot: Int = 0
 
         val encoding = implicitly[Color[Repr]]
@@ -76,7 +74,7 @@ object Generator {
             val nx = x + xd
             val ny = y + yd
             if ((nx >= 0) && (nx < w) && (ny >= 0) && (ny < h)) {
-              val c = image.get(nx, ny)
+              val c = image(nx, ny)
               r += encoding.r(c)
               g += encoding.g(c)
               b += encoding.b(c)

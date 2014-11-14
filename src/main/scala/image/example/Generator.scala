@@ -1,6 +1,6 @@
 package image.example
 
-abstract class Generator[Repr: Color] {
+abstract class Generator[Repr: Pixel] {
   def width: Int
   def height: Int
   def generate(x: Int, y: Int): Repr
@@ -8,7 +8,7 @@ abstract class Generator[Repr: Color] {
 
 object Generator {
 
-  def convertTo[Repr, Repr2](to: Color[Repr2])(implicit from: Color[Repr]) =
+  def convertTo[Repr, Repr2](to: Pixel[Repr2])(implicit from: Pixel[Repr]) =
     (image: Image[Repr]) => new Generator[Repr2]()(to) {
       def width = image.width
       def height = image.height
@@ -23,22 +23,22 @@ object Generator {
       }
     }
 
-  def scale[Repr: Color](scale: Float) =
+  def scale[Repr: Pixel](scale: Float) =
     (image: Image[Repr]) => new Generator[Repr] {
       def width = (image.width * scale).toInt
       def height = (image.height * scale).toInt
       def generate(x: Int, y: Int): Repr = {
-        val encoding = implicitly[Color[Repr]]
+        val encoding = implicitly[Pixel[Repr]]
         image((x.toFloat / scale).toInt, (y.toFloat / scale).toInt)
       }
     }
 
-  def invert[Repr: Color] =
+  def invert[Repr: Pixel] =
     (image: Image[Repr]) => new Generator[Repr] {
       def width = image.width
       def height = image.height
       def generate(x: Int, y: Int): Repr = {
-        val encoding = implicitly[Color[Repr]]
+        val encoding = implicitly[Pixel[Repr]]
         val pixel = image(x, y)
         val r = encoding.r(pixel)
         val g = encoding.g(pixel)
@@ -50,7 +50,7 @@ object Generator {
     }
 
   /** Generator that blurs an existing image */
-  def blur[Repr: Color](size: Int) =
+  def blur[Repr: Pixel](size: Int) =
     (image: Image[Repr]) => new Generator[Repr] {
       def width = image.width
       def height = image.height
@@ -67,7 +67,7 @@ object Generator {
         var a: Double = 0
         var tot: Int = 0
 
-        val encoding = implicitly[Color[Repr]]
+        val encoding = implicitly[Pixel[Repr]]
 
         while (xd < size) {
           while (yd < size) {

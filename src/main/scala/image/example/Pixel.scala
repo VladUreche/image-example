@@ -1,20 +1,22 @@
 package image.example
 
-abstract class Color[Repr: Manifest] {
+import language.implicitConversions
+
+abstract class Pixel[Repr: Manifest] {
   def r(t: Repr): Double // red
   def g(t: Repr): Double // green
   def b(t: Repr): Double // blue
   def a(t: Repr): Double // alpha
   def pack(r: Double, g: Double, b: Double, a: Double): Repr
-  // to allow Image to build a member:
+  // to allow Image to build an array:
   implicit def manifest = implicitly[Manifest[Repr]]
 }
 
-/** Different implementations of the Color system */
-object Color {
+/** Different implementations of the Pixel system */
+object Pixel {
 
-  /** RGB + alpha */
-  class RGBA extends Color[Int] {
+  /** 8-bit RGB channels + 8-bit alpha, encoded in integers */
+  class RGBA extends Pixel[Int] {
     def r(t: Int): Double = (t & 0xFF000000).toDouble / 0xFF000000
     def g(t: Int): Double = (t & 0x00FF0000).toDouble / 0x00FF0000
     def b(t: Int): Double = (t & 0x0000FF00).toDouble / 0x0000FF00
@@ -27,11 +29,9 @@ object Color {
   }
   implicit object RGBA extends RGBA
 
-  /** 4-channel entry, parameterized on how the color is stored */
-  case class FourChannelEntry[T](r: T, g: T, b: T, a: T)
-
-  // for the constructor argument, see https://github.com/miniboxing/miniboxing-plugin/issues/144
-  abstract class FourChannelColor[T] extends Color[FourChannelEntry[T]]()(manifest[AnyRef].asInstanceOf[Manifest[FourChannelEntry[T]]]) {
+  /** Abstract 4-channel Pixel, parameterized on the channel representation */
+  abstract class FourChannelPixel[T] extends Pixel[FourChannelEntry[T]]()(manifest[AnyRef].asInstanceOf[Manifest[FourChannelEntry[T]]]) {
+    // for the constructor argument, see https://github.com/miniboxing/miniboxing-plugin/issues/144
     implicit def toDouble(t: T): Double
     implicit def fromDouble(t: Double): T
     def r(t: FourChannelEntry[T]): Double = t.r
@@ -41,17 +41,24 @@ object Color {
     def pack(r: Double, g: Double, b: Double, a: Double): FourChannelEntry[T] =
       FourChannelEntry(r, g, b, a)
   }
-  implicit object FullColor extends FourChannelColor[Double] {
+
+  /** 4-channel entry, parameterized on the channel representation */
+  case class FourChannelEntry[T](r: T, g: T, b: T, a: T)
+
+  /** Storing values as doubles, to enable transformations */
+  implicit object FullPixel extends FourChannelPixel[Double] {
     implicit def toDouble(t: Double): Double = t
     implicit def fromDouble(t: Double): Double = t
   }
 
-  implicit object HalfColor extends FourChannelColor[Float] {
+  /** Storing values as floates, to enable transformations while conserving space */
+  implicit object HalfPixel extends FourChannelPixel[Float] {
     implicit def toDouble(t: Float): Double = t
     implicit def fromDouble(t: Double): Float = t.toFloat
   }
 
-  class RGBAExtended extends Color[Long] {
+  /** Storing 16-bit colors instead of 8-bit */
+  class RGBAExtended extends Pixel[Long] {
     def r(t: Long): Double = (t & 0xFFFF000000000000l).toDouble / 0xFFFF000000000000l
     def g(t: Long): Double = (t & 0x0000FFFF00000000l).toDouble / 0x0000FFFF00000000l
     def b(t: Long): Double = (t & 0x00000000FFFF0000l).toDouble / 0x00000000FFFF0000l
@@ -64,6 +71,6 @@ object Color {
   }
   implicit object RGBAExtended extends RGBAExtended
 
-  // TODO: Define other color systems
+  // TODO: Define other Pixel representations
 }
 

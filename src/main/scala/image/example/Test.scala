@@ -4,15 +4,15 @@ import Generator._
 
 object Test {
   def main(args: Array[String]): Unit = {
-    val image = Image.empty(500, 500)(Color.RGBA)
+    val image = Image.empty(500, 500)(Pixel.RGBA)
     for (a <- 1 to 5)
       timed {
         image.
-          map(convertTo(Color.FullColor)).
+          map(convertTo(Pixel.FullPixel)).
           map(invert).
           map(scale(2)).
           map(blur(10)).
-          map(convertTo(Color.RGBA))
+          map(convertTo(Pixel.RGBA))
       }
   }
 

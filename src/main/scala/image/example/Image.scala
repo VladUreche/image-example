@@ -21,7 +21,7 @@ object Image {
 /** Image implementation */
 private class ImageImpl[Repr: Pixel](val width: Int, val height: Int) extends Image[Repr] {
   // internal storage:
-  val array = implicitly[Pixel[Repr]].manifest.newArray(width * height)
+  val array: Array[Repr] = implicitly[Pixel[Repr]].manifest.newArray(width * height)
 
   // get pixel, public:
   def apply(x: Int, y: Int): Repr = {

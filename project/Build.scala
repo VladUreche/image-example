@@ -22,9 +22,5 @@ object MyBuild extends Build {
     resolvers += Resolver.sonatypeRepo("snapshots"),
     libraryDependencies += "org.scala-miniboxing.plugins" %% "miniboxing-runtime" % "0.4-SNAPSHOT",
     addCompilerPlugin("org.scala-miniboxing.plugins" %% "miniboxing-plugin" % "0.4-SNAPSHOT"),
-    scalacOptions ++= (
-      "-P:minibox:warn" ::
-      Nil
-    )
   )
 }

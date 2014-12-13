@@ -8,6 +8,7 @@ abstract class Generator[Repr: Pixel] {
 
 object Generator {
 
+  /** Convert image from a Pixel representation to another */
   def convertTo[Repr, Repr2](to: Pixel[Repr2])(implicit from: Pixel[Repr]) =
     (image: Image[Repr]) => new Generator[Repr2]()(to) {
       def width = image.width
@@ -23,6 +24,7 @@ object Generator {
       }
     }
 
+  /** Scale image */
   def scale[Repr: Pixel](scale: Float) =
     (image: Image[Repr]) => new Generator[Repr] {
       def width = (image.width * scale).toInt
@@ -33,6 +35,7 @@ object Generator {
       }
     }
 
+  /** Invert colors */
   def invert[Repr: Pixel] =
     (image: Image[Repr]) => new Generator[Repr] {
       def width = image.width
@@ -49,7 +52,7 @@ object Generator {
       }
     }
 
-  /** Generator that blurs an existing image */
+  /** Blur image */
   def blur[Repr: Pixel](size: Int) =
     (image: Image[Repr]) => new Generator[Repr] {
       def width = image.width
